@@ -6,14 +6,23 @@ import com.ivan.datastructures.tree.TreePrinter
 
 fun main(args: Array<String>) {
 
+    val treePrinter: TreePrinter = DigitsConsoleTreePrinter()
+
     val bst: Tree<String, Int> = BinarySearchTree()
     bst.insert("3", 3)
     bst.insert("1", 1)
     bst.insert("4", 4)
     bst.insert("2", 2)
-    bst.insert("5", 5)
-    bst.insert("9", 9)
     bst.insert("7", 7)
+    bst.insert("9", 9)
+    bst.insert("5", 5)
+    bst.insert("8", 8)
+    bst.insert("99", 99)
+    bst.insert("88", 88)
+
+    treePrinter.print(bst)
+    bst.remove("7")
+    treePrinter.print(bst)
 
     val bst2: Tree<String, Int> = BinarySearchTree()
     bst2.insert("one", 1)
@@ -26,7 +35,4 @@ fun main(args: Array<String>) {
     bst2.insert("eight", 8)
     bst2.insert("nine", 9)
     bst2.insert("ten", 10)
-
-    val treePrinter: TreePrinter = DigitsConsoleTreePrinter()
-    treePrinter.print(bst)
 }

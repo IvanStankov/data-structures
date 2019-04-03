@@ -12,25 +12,7 @@ class BinarySearchTree<K: Comparable<K>, V> : Tree<K, V> {
     }
 
     override fun find(key: K): V? {
-        if (root == null) {
-            return null
-        }
-
-        var tmp = root
-        while (tmp != null) {
-            val compareResult = key.compareTo(tmp.key)
-
-            if (compareResult < 0) {
-                tmp = tmp.left
-            } else if (compareResult > 0) {
-                tmp = tmp.right
-            } else {
-                // key is found
-                return tmp.value
-            }
-        }
-        // kew was not found
-        return null
+        return findNode(key)?.value
     }
 
     override fun insert(key: K, value: V) {
@@ -62,7 +44,76 @@ class BinarySearchTree<K: Comparable<K>, V> : Tree<K, V> {
         }
     }
 
-    override fun remove(key: K) {
-        TODO("not implemented") //To change body of created functions use File | Settings | File Templates.
+    override fun remove(key: K): V? {
+        val nodeToRemove = findNode(key) ?: return null
+
+        if (nodeToRemove.left != null && nodeToRemove.right != null) {
+            val successor = findSuccessor(nodeToRemove)
+            if (successor.right != null) {
+                // place successor's right node on the previous place of successor
+                removeNode(successor, successor.right)
+            } else {
+                // successor can not have left node, so just remove it
+                removeNode(successor)
+            }
+
+            removeNode(nodeToRemove, successor)
+
+            // change successor's left and right children on the last step
+            successor.left = nodeToRemove.left
+            successor.left!!.parent = successor
+
+            successor.right = nodeToRemove.right
+            successor.right!!.parent = successor
+        } else if (nodeToRemove.left != null) {
+            removeNode(nodeToRemove, nodeToRemove.left)
+        } else if (nodeToRemove.right != null) {
+            removeNode(nodeToRemove, nodeToRemove.right)
+        } else {
+            // successor has no children
+            removeNode(nodeToRemove)
+        }
+
+        return nodeToRemove.value
+    }
+
+    private fun findSuccessor(node: Entry<K, V>): Entry<K, V> {
+        var successor = node.right!!
+        while (successor.left != null) {
+            successor = successor.left!!
+        }
+        return successor
+    }
+
+    private fun findNode(key: K): Entry<K, V>? {
+        if (root == null) {
+            return null
+        }
+
+        var tmp = root
+        while (tmp != null) {
+            val compareResult = key.compareTo(tmp.key)
+
+            if (compareResult < 0) {
+                tmp = tmp.left
+            } else if (compareResult > 0) {
+                tmp = tmp.right
+            } else {
+                // key is found
+                return tmp
+            }
+        }
+        // key does not exist in the tree
+        return null
+    }
+
+    private fun removeNode(node: Entry<K, V>, newNode: Entry<K, V>? = null) {
+        val parent = node.parent!!
+        if (parent.left?.key == node.key) {
+            parent.left = newNode
+        } else {
+            parent.right = newNode
+        }
+        newNode?.parent = parent
     }
 }

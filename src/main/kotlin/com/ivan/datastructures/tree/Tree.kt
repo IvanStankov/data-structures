@@ -8,7 +8,7 @@ interface Tree<K, V> {
 
     fun insert(key: K, value: V)
 
-    fun remove(key: K)
+    fun remove(key: K): V?
 
 }
 
