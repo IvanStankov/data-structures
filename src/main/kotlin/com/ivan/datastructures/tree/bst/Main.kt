@@ -21,7 +21,8 @@ fun main(args: Array<String>) {
     bst.insert("88", 88)
 
     treePrinter.print(bst)
-    bst.remove("7")
+//    bst.remove("7")
+    bst.remove("3")
     treePrinter.print(bst)
 
     val bst2: Tree<String, Int> = BinarySearchTree()

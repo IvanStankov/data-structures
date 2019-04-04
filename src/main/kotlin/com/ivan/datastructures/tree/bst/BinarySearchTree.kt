@@ -57,21 +57,21 @@ class BinarySearchTree<K: Comparable<K>, V> : Tree<K, V> {
                 removeNode(successor)
             }
 
-            removeNode(nodeToRemove, successor)
+            removeNode(nodeToRemove, successor, true)
 
             // change successor's left and right children on the last step
             successor.left = nodeToRemove.left
-            successor.left!!.parent = successor
+            successor.left?.parent = successor
 
             successor.right = nodeToRemove.right
-            successor.right!!.parent = successor
+            successor.right?.parent = successor
         } else if (nodeToRemove.left != null) {
-            removeNode(nodeToRemove, nodeToRemove.left)
+            removeNode(nodeToRemove, nodeToRemove.left, true)
         } else if (nodeToRemove.right != null) {
-            removeNode(nodeToRemove, nodeToRemove.right)
+            removeNode(nodeToRemove, nodeToRemove.right, true)
         } else {
-            // successor has no children
-            removeNode(nodeToRemove)
+            // node to remove has no children
+            removeNode(nodeToRemove, checkRoot = true)
         }
 
         return nodeToRemove.value
@@ -107,13 +107,17 @@ class BinarySearchTree<K: Comparable<K>, V> : Tree<K, V> {
         return null
     }
 
-    private fun removeNode(node: Entry<K, V>, newNode: Entry<K, V>? = null) {
-        val parent = node.parent!!
-        if (parent.left?.key == node.key) {
+    private fun removeNode(nodeToRemove: Entry<K, V>, newNode: Entry<K, V>? = null, checkRoot: Boolean = false) {
+        val parent = nodeToRemove.parent
+        if (parent?.left?.key == nodeToRemove.key) {
             parent.left = newNode
-        } else {
+        } else if (parent?.right?.key == nodeToRemove.key) {
             parent.right = newNode
         }
         newNode?.parent = parent
+
+        if (checkRoot && root!!.key == nodeToRemove.key) {
+            root = newNode
+        }
     }
 }

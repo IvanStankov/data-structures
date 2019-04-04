@@ -18,4 +18,8 @@ data class Entry<K, V>(
     var parent: Entry<K, V>? = null,
     var left: Entry<K, V>? = null,
     var right: Entry<K, V>? = null
-)
+) {
+    override fun toString(): String {
+        return key.toString()
+    }
+}
