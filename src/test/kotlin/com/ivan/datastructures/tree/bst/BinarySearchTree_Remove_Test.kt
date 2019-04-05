@@ -5,6 +5,7 @@ import com.ivan.datastructures.tree.Tree
 import org.junit.jupiter.api.Test
 import kotlin.test.BeforeTest
 import kotlin.test.assertEquals
+import kotlin.test.assertNull
 
 internal class BinarySearchTree_Remove_Test {
 
@@ -15,8 +16,8 @@ internal class BinarySearchTree_Remove_Test {
     //     /    \
     //    /      \
     //   6       20
-    //  / \        \
-    // 2   9        30
+    //  / \     /  \
+    // 2   9  15    30
     //    /        /  \
     //   7       22    40
     //            \     \
@@ -28,6 +29,7 @@ internal class BinarySearchTree_Remove_Test {
         bst.insert(20, "twenty")
         bst.insert(2, "two")
         bst.insert(9, "nine")
+        bst.insert(15, "fifteen")
         bst.insert(30, "thirty")
         bst.insert(7, "seven")
         bst.insert(22, "twenty two")
@@ -43,23 +45,164 @@ internal class BinarySearchTree_Remove_Test {
 
         // Then
         val root = bst.root()!!
+        assertNode(root, 15)
         // left subtree
-        assertNode(root, 20)
         assertNode(root.left!!, 6)
-        assertNode(root.left!!.left!!, 2)
-        assertNode(root.left!!.right!!, 9)
-        assertNode(root.left!!.right!!.left!!, 7)
-
+        assertNode(root.left!!.left!!, 2, hasLeft = false, hasRight = false)
+        assertNode(root.left!!.right!!, 9, hasLeft = true, hasRight = false)
+        assertNode(root.left!!.right!!.left!!, 7, hasLeft = false, hasRight = false)
         // right subtree
-        assertNode(root.right!!, 30)
-        assertNode(root.right!!.left!!, 22)
-        assertNode(root.right!!.left!!.right!!, 24)
+        assertNode(root.right!!, 20, hasLeft = false, hasRight = true)
         assertNode(root.right!!.right!!, 30)
-        assertNode(root.right!!.right!!.right!!, 45)
+        assertNode(root.right!!.right!!.left!!, 22, hasLeft = false, hasRight = true)
+        assertNode(root.right!!.right!!.left!!.right!!, 24, hasLeft = false, hasRight = false)
+        assertNode(root.right!!.right!!.right!!, 40, hasLeft = false, hasRight = true)
+        assertNode(root.right!!.right!!.right!!.right!!, 45, hasLeft = false, hasRight = false)
     }
 
-    private fun assertNode(node: Entry<Int, String>, key: Int) {
+    @Test
+    fun remove_ForLeftLeaf_ShouldRemoveLeaf() {
+        // When
+        bst.remove(7)
+
+        // Then
+        val root = bst.root()!!
+        assertNode(root, 10)
+        // left subtree
+        assertNode(root.left!!, 6)
+        assertNode(root.left!!.left!!, 2, hasLeft = false, hasRight = false)
+        assertNode(root.left!!.right!!, 9, hasLeft = false, hasRight = false)
+        // right subtree
+        assertNode(root.right!!, 20, hasLeft = true, hasRight = true)
+        assertNode(root.right!!.left!!, 15, hasLeft = false, hasRight = false)
+        assertNode(root.right!!.right!!, 30)
+        assertNode(root.right!!.right!!.left!!, 22, hasLeft = false, hasRight = true)
+        assertNode(root.right!!.right!!.left!!.right!!, 24, hasLeft = false, hasRight = false)
+        assertNode(root.right!!.right!!.right!!, 40, hasLeft = false, hasRight = true)
+        assertNode(root.right!!.right!!.right!!.right!!, 45, hasLeft = false, hasRight = false)
+    }
+
+    @Test
+    fun remove_ForRightLeaf_ShouldRemoveLeaf() {
+        // When
+        bst.remove(24)
+
+        // Then
+        val root = bst.root()!!
+        assertNode(root, 10)
+        // left subtree
+        assertNode(root.left!!, 6)
+        assertNode(root.left!!.left!!, 2, hasLeft = false, hasRight = false)
+        assertNode(root.left!!.right!!, 9, hasLeft = true, hasRight = false)
+        assertNode(root.left!!.right!!.left!!, 7, hasLeft = false, hasRight = false)
+        // right subtree
+        assertNode(root.right!!, 20, hasLeft = true, hasRight = true)
+        assertNode(root.right!!.left!!, 15, hasLeft = false, hasRight = false)
+        assertNode(root.right!!.right!!, 30)
+        assertNode(root.right!!.right!!.left!!, 22, hasLeft = false, hasRight = false)
+        assertNode(root.right!!.right!!.right!!, 40, hasLeft = false, hasRight = true)
+        assertNode(root.right!!.right!!.right!!.right!!, 45, hasLeft = false, hasRight = false)
+    }
+
+    @Test
+    fun remove_ForNodeWithOnlyLeftChild_ShouldPlaceLeftChildInsteadOfRemoved() {
+        // When
+        bst.remove(9)
+
+        // Then
+        val root = bst.root()!!
+        assertNode(root, 10)
+        // left subtree
+        assertNode(root.left!!, 6)
+        assertNode(root.left!!.left!!, 2, hasLeft = false, hasRight = false)
+        assertNode(root.left!!.right!!, 7, hasLeft = false, hasRight = false)
+        // right subtree
+        assertNode(root.right!!, 20, hasLeft = true, hasRight = true)
+        assertNode(root.right!!.left!!, 15, hasLeft = false, hasRight = false)
+        assertNode(root.right!!.right!!, 30)
+        assertNode(root.right!!.right!!.left!!, 22, hasLeft = false, hasRight = true)
+        assertNode(root.right!!.right!!.left!!.right!!, 24, hasLeft = false, hasRight = false)
+        assertNode(root.right!!.right!!.right!!, 40, hasLeft = false, hasRight = true)
+        assertNode(root.right!!.right!!.right!!.right!!, 45, hasLeft = false, hasRight = false)
+    }
+
+    @Test
+    fun remove_ForNodeWithOnlyRightChild_ShouldPlaceRightChildInsteadOfRemoved() {
+        // When
+        bst.remove(22)
+
+        // Then
+        val root = bst.root()!!
+        assertNode(root, 10)
+        // left subtree
+        assertNode(root.left!!, 6)
+        assertNode(root.left!!.left!!, 2, hasLeft = false, hasRight = false)
+        assertNode(root.left!!.right!!, 9, hasLeft = true, hasRight = false)
+        assertNode(root.left!!.right!!.left!!, 7, hasLeft = false, hasRight = false)
+        // right subtree
+        assertNode(root.right!!, 20, hasLeft = true, hasRight = true)
+        assertNode(root.right!!.left!!, 15, hasLeft = false, hasRight = false)
+        assertNode(root.right!!.right!!, 30)
+        assertNode(root.right!!.right!!.left!!, 24, hasLeft = false, hasRight = false)
+        assertNode(root.right!!.right!!.right!!, 40, hasLeft = false, hasRight = true)
+        assertNode(root.right!!.right!!.right!!.right!!, 45, hasLeft = false, hasRight = false)
+    }
+
+    @Test
+    fun remove_ForNodeWith2ChildrenWhenSuccessorDoesNotHaveRightChild_ShouldPlaceSuccessorInsteadOfRemoved() {
+        // When
+        bst.remove(6)
+
+        // Then
+        val root = bst.root()!!
+        assertNode(root, 10)
+        // left subtree
+        assertNode(root.left!!, 7)
+        assertNode(root.left!!.left!!, 2, hasLeft = false, hasRight = false)
+        assertNode(root.left!!.right!!, 9, hasLeft = false, hasRight = false)
+        // right subtree
+        assertNode(root.right!!, 20, hasLeft = true, hasRight = true)
+        assertNode(root.right!!.left!!, 15, hasLeft = false, hasRight = false)
+        assertNode(root.right!!.right!!, 30)
+        assertNode(root.right!!.right!!.left!!, 22, hasLeft = false, hasRight = true)
+        assertNode(root.right!!.right!!.left!!.right!!, 24, hasLeft = false, hasRight = false)
+        assertNode(root.right!!.right!!.right!!, 40, hasLeft = false, hasRight = true)
+        assertNode(root.right!!.right!!.right!!.right!!, 45, hasLeft = false, hasRight = false)
+    }
+
+    @Test
+    fun remove_ForNodeWith2ChildrenWhenSuccessorHasRightChild_ShouldPlaceSuccessorInsteadOfRemovedAndRightChildInPlaceOfSuccessor() {
+        // When
+        bst.remove(20)
+
+        // Then
+        val root = bst.root()!!
+        assertNode(root, 10)
+        // left subtree
+        assertNode(root.left!!, 6)
+        assertNode(root.left!!.left!!, 2, hasLeft = false, hasRight = false)
+        assertNode(root.left!!.right!!, 9, hasLeft = true, hasRight = false)
+        assertNode(root.left!!.right!!.left!!, 7, hasLeft = false, hasRight = false)
+        // right subtree
+        assertNode(root.right!!, 22, hasLeft = true, hasRight = true)
+        assertNode(root.right!!.left!!, 15, hasLeft = false, hasRight = false)
+        assertNode(root.right!!.right!!, 30)
+        assertNode(root.right!!.right!!.left!!, 24, hasLeft = false, hasRight = false)
+        assertNode(root.right!!.right!!.right!!, 40, hasLeft = false, hasRight = true)
+        assertNode(root.right!!.right!!.right!!.right!!, 45, hasLeft = false, hasRight = false)
+    }
+
+    private fun assertNode(node: Entry<Int, String>, key: Int, hasLeft: Boolean = true, hasRight: Boolean = true) {
         assertEquals(key, node.key)
-        assertEquals(node, node.left?.parent)
+        if (hasLeft) {
+            assertEquals(node, node.left!!.parent)
+        } else {
+            assertNull(node.left)
+        }
+        if (hasRight) {
+            assertEquals(node, node.right!!.parent)
+        } else {
+            assertNull(node.right)
+        }
     }
 }
