@@ -25,21 +25,25 @@ class BinarySearchTree<K: Comparable<K>, V> : Tree<K, V> {
         while (parent != null) {
             val compareResult = key.compareTo(parent.key)
 
-            if (compareResult < 0) {
-                if (parent.left == null) {
-                    parent.left = Entry(key, value, parent)
+            when {
+                compareResult < 0 -> {
+                    if (parent.left == null) {
+                        parent.left = Entry(key, value, parent)
+                        return
+                    }
+                    parent = parent.left
+                }
+                compareResult > 0 -> {
+                    if (parent.right == null) {
+                        parent.right = Entry(key, value, parent)
+                    }
+                    parent = parent.right
+                }
+                else -> {
+                    // key already exists in the tree, just substitute the value
+                    parent.value = value
                     return
                 }
-                parent = parent.left
-            } else if (compareResult > 0) {
-                if (parent.right == null) {
-                    parent.right = Entry(key, value, parent)
-                }
-                parent = parent.right
-            } else {
-                // key already exists in the tree, just substitute the value
-                parent.value = value
-                return
             }
         }
     }

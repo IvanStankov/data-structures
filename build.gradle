@@ -21,12 +21,17 @@ repositories {
     mavenCentral()
 }
 
+test {
+    useJUnitPlatform()
+}
+
 dependencies {
     implementation "org.jetbrains.kotlin:kotlin-stdlib-jdk8"
     testCompile "org.jetbrains.kotlin:kotlin-test-annotations-common:$kotlinVersion",
-                   "org.jetbrains.kotlin:kotlin-test-junit5:$kotlinVersion",    
-                   "org.jetbrains.kotlin:kotlin-test:$kotlinVersion",
-                   "org.jetbrains.kotlin:kotlin-test-common:$kotlinVersion"
+                "org.jetbrains.kotlin:kotlin-test-junit5:$kotlinVersion",    
+                "org.jetbrains.kotlin:kotlin-test:$kotlinVersion",
+                "org.jetbrains.kotlin:kotlin-test-common:$kotlinVersion",
+                "org.junit.jupiter:junit-jupiter-engine:5.4.1"    
 }
 
 compileKotlin {
