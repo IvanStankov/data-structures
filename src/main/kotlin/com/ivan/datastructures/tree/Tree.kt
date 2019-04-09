@@ -12,7 +12,7 @@ interface Tree<K, V> {
 
 }
 
-data class Entry<K, V>(
+open class Entry<K, V>(
     val key: K,
     var value: V,
     var parent: Entry<K, V>? = null,
