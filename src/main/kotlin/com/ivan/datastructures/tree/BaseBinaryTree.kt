@@ -1,6 +1,6 @@
 package com.ivan.datastructures.tree
 
-abstract class BaseBinaryTree<K: Comparable<K>, V> : Tree<K, V> {
+abstract class BaseBinaryTree<K : Comparable<K>, V> : Tree<K, V> {
 
     protected var root: Entry<K, V>? = null
 
@@ -11,6 +11,8 @@ abstract class BaseBinaryTree<K: Comparable<K>, V> : Tree<K, V> {
     override fun find(key: K): V? {
         return findNode(key)?.value
     }
+
+    protected abstract fun createEntry(key: K, value: V): Entry<K, V>;
 
     protected fun findNode(key: K): Entry<K, V>? {
         if (root == null) {
@@ -36,7 +38,7 @@ abstract class BaseBinaryTree<K: Comparable<K>, V> : Tree<K, V> {
 
     protected fun insertNode(key: K, value: V): Entry<K, V> {
         if (root == null) {
-            root = Entry(key, value)
+            root = createEntry(key, value)
             return root!!
         }
 
@@ -47,16 +49,18 @@ abstract class BaseBinaryTree<K: Comparable<K>, V> : Tree<K, V> {
             when {
                 compareResult < 0 -> {
                     if (parent.left == null) {
-                        val newNode = Entry(key, value, parent)
+                        val newNode = createEntry(key, value)
                         parent.left = newNode
+                        newNode.parent = parent
                         return newNode
                     }
                     parent = parent.left
                 }
                 compareResult > 0 -> {
                     if (parent.right == null) {
-                        val newNode = Entry(key, value, parent)
+                        val newNode = createEntry(key, value)
                         parent.right = newNode
+                        newNode.parent = parent
                         return newNode
                     }
                     parent = parent.right
