@@ -1,7 +1,6 @@
 package com.ivan.datastructures.tree.avl
 
-import com.ivan.datastructures.tree.BaseBinaryTree
-import com.ivan.datastructures.tree.Entry
+import com.ivan.datastructures.tree.*
 import kotlin.math.absoluteValue
 
 class AvlTree<K : Comparable<K>, V> : BaseBinaryTree<K, V>() {
@@ -30,9 +29,7 @@ class AvlTree<K : Comparable<K>, V> : BaseBinaryTree<K, V>() {
             nodeToRotate = parent
         }
 
-        if (balanceFactor.absoluteValue <= 1) {
-            return
-        }
+        if (balanceFactor.absoluteValue <= 1) return
 
         when {
             balanceFactor > 1 -> {
@@ -63,9 +60,38 @@ class AvlTree<K : Comparable<K>, V> : BaseBinaryTree<K, V>() {
         return node.rightSubtreeHeight - node.leftSubtreeHeight
     }
 
-    private fun rotateLeft(nodeToRotate: AvlEntry<K, V>): AvlEntry<K, V> {
+    private fun rotateLeft(nodeToRotate: AvlEntry<K, V>) {
         val newParent = nodeToRotate.right as AvlEntry
         val oldLeftNodeOfNewParent = newParent.left as AvlEntry?
+        val grandParent = nodeToRotate.parent
+
+        if (grandParent != null) {
+            if (grandParent.right == nodeToRotate) {
+                grandParent.right = newParent
+            } else {
+                grandParent.left = newParent
+            }
+            newParent.parent = grandParent
+        } else {
+            // rotation on the root
+            root = newParent
+            newParent.parent = null
+        }
+
+        nodeToRotate.right = oldLeftNodeOfNewParent
+        oldLeftNodeOfNewParent?.parent = nodeToRotate
+
+        newParent.left = nodeToRotate
+        nodeToRotate.parent = newParent
+
+        updateHeights(oldLeftNodeOfNewParent)
+        updateHeights(nodeToRotate)
+        updateHeights(newParent)
+    }
+
+    private fun rotateRight(nodeToRotate: AvlEntry<K, V>) {
+        val newParent = nodeToRotate.left as AvlEntry<K, V>
+        val oldRightNodeOfNewParent = newParent.right as AvlEntry?
         val grandParent = nodeToRotate.parent
 
         if (grandParent != null) {
@@ -81,51 +107,21 @@ class AvlTree<K : Comparable<K>, V> : BaseBinaryTree<K, V>() {
             newParent.parent = null
         }
 
-        nodeToRotate.right = oldLeftNodeOfNewParent
-        oldLeftNodeOfNewParent?.parent = nodeToRotate
+        nodeToRotate.left = oldRightNodeOfNewParent
+        oldRightNodeOfNewParent?.parent = nodeToRotate
 
-        newParent.left = nodeToRotate
+        newParent.right = nodeToRotate
         nodeToRotate.parent = newParent
 
-        updateHeights(oldLeftNodeOfNewParent)
+        updateHeights(oldRightNodeOfNewParent)
         updateHeights(nodeToRotate)
-        updateHeights(newParent, 1)
-
-
-        return newParent
+        updateHeights(newParent)
     }
 
-    private fun rotateRight(node: AvlEntry<K, V>): AvlEntry<K, V> {
-        val a = node.left as AvlEntry<K, V>
-        val y = a.right
-        val parent = node.parent
+    private fun updateHeights(node: AvlEntry<K, V>?) {
+        if (node == null) return
 
-        if (parent != null) {
-            if (parent.right == node) {
-                parent.right = a
-            } else {
-                parent.left = a
-            }
-            a.parent = parent
-        } else {
-            // rotation on root
-            root = a
-            a.parent = null
-        }
-
-        node.left = y
-        y?.parent = node
-
-        a.right = node
-        node.parent = a
-
-        return a
-    }
-
-    private fun updateHeights(node: AvlEntry<K, V>?, increment: Int = 0) {
-        if (node == null) {
-            return
-        }
+        val increment = if (node.left != null || node.right != null) 1 else 0
         node.leftSubtreeHeight = maxOf((node.left as AvlEntry?)?.leftSubtreeHeight ?: 0, (node.left as AvlEntry?)?.rightSubtreeHeight ?: 0) + increment
         node.rightSubtreeHeight = maxOf((node.right as AvlEntry?)?.leftSubtreeHeight ?: 0, (node.right as AvlEntry?)?.rightSubtreeHeight ?: 0) + increment
     }
