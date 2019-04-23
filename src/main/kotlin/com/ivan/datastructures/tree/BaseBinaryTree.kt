@@ -74,4 +74,59 @@ abstract class BaseBinaryTree<K : Comparable<K>, V> : Tree<K, V> {
         }
         throw Exception("Unreachable situation")
     }
+
+    protected fun removeNode(key: K): Entry<K, V>? {
+        val nodeToRemove = findNode(key) ?: return null
+
+        if (nodeToRemove.left != null && nodeToRemove.right != null) {
+            val successor = findSuccessor(nodeToRemove)
+            if (successor.right != null) {
+                // place successor's right node on the previous place of successor
+                doRemoveNode(successor, successor.right)
+            } else {
+                // successor can not have left node, so just remove it
+                doRemoveNode(successor)
+            }
+
+            doRemoveNode(nodeToRemove, successor, true)
+
+            // change successor's left and right children on the last step
+            successor.left = nodeToRemove.left
+            successor.left?.parent = successor
+
+            successor.right = nodeToRemove.right
+            successor.right?.parent = successor
+        } else if (nodeToRemove.left != null) {
+            doRemoveNode(nodeToRemove, nodeToRemove.left, true)
+        } else if (nodeToRemove.right != null) {
+            doRemoveNode(nodeToRemove, nodeToRemove.right, true)
+        } else {
+            // node to remove has no children
+            doRemoveNode(nodeToRemove, checkRoot = true)
+        }
+
+        return nodeToRemove
+    }
+
+    private fun doRemoveNode(nodeToRemove: Entry<K, V>, newNode: Entry<K, V>? = null, checkRoot: Boolean = false) {
+        val parent = nodeToRemove.parent
+        if (parent?.left?.key == nodeToRemove.key) {
+            parent.left = newNode
+        } else if (parent?.right?.key == nodeToRemove.key) {
+            parent.right = newNode
+        }
+        newNode?.parent = parent
+
+        if (checkRoot && root!!.key == nodeToRemove.key) {
+            root = newNode
+        }
+    }
+
+    private fun findSuccessor(node: Entry<K, V>): Entry<K, V> {
+        var successor = node.right!!
+        while (successor.left != null) {
+            successor = successor.left!!
+        }
+        return successor
+    }
 }

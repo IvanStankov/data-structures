@@ -103,4 +103,21 @@ internal class AvlTreeVisualTest {
         avl.insert(10, 10)
         treePrinter.print(avl)
     }
+
+    @Test
+    fun delete() {
+        val avl: Tree<String, Int> = AvlTree()
+        avl.insert("1", 1)
+        avl.insert("2", 2)
+        avl.insert("3", 3)
+        avl.insert("4", 4)
+        avl.insert("5", 5)
+        avl.insert("6", 6)
+        avl.insert("7", 7)
+        avl.insert("8", 8)
+        avl.insert("9", 9)
+        treePrinter.print(avl)
+        avl.remove("5")
+        treePrinter.print(avl)
+    }
 }

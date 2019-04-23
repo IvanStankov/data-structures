@@ -11,9 +11,19 @@ class AvlTree<K : Comparable<K>, V> : BaseBinaryTree<K, V>() {
 
     override fun insert(key: K, value: V) {
         val newNode = insertNode(key, value)
+        balanceTree(newNode as AvlEntry<K, V>)
+    }
 
+    override fun remove(key: K): V? {
+        val removedNode = removeNode(key) ?: return null
+        // it checks for kinks, but we do not need it for deletion
+        balanceTree(removedNode as AvlEntry<K, V>, false)
+        return removedNode.value
+    }
+
+    private fun balanceTree(node: AvlEntry<K, V>, checkKinks: Boolean = true) {
         // find first node which is out of balance
-        var nodeToRotate: AvlEntry<K, V> = newNode as AvlEntry // node which is out of balance
+        var nodeToRotate: AvlEntry<K, V> = node // node which is out of balance
         var balanceFactor = 0
         while (nodeToRotate.parent != null && balanceFactor.absoluteValue <= 1) {
             val parent = nodeToRotate.parent as AvlEntry
@@ -27,7 +37,7 @@ class AvlTree<K : Comparable<K>, V> : BaseBinaryTree<K, V>() {
         when {
             balanceFactor > 1 -> {
                 val right = nodeToRotate.right
-                if (right != null && right.key > newNode.key) {
+                if (checkKinks && right != null && right.key > node.key) {
                     // contains kink
                     rotateRight(nodeToRotate.right as AvlEntry)
                 }
@@ -35,17 +45,13 @@ class AvlTree<K : Comparable<K>, V> : BaseBinaryTree<K, V>() {
             }
             balanceFactor < -1 -> {
                 val left = nodeToRotate.left
-                if (left != null && left.key < newNode.key) {
+                if (checkKinks && left != null && left.key < node.key) {
                     // contains kink
                     rotateLeft(nodeToRotate.left as AvlEntry)
                 }
                 rotateRight(nodeToRotate)
             }
         }
-    }
-
-    override fun remove(key: K): V? {
-        TODO("not implemented") //To change body of created functions use File | Settings | File Templates.
     }
 
     private fun calcBalanceFactor(node: AvlEntry<K, V>): Int {
