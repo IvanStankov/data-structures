@@ -17,14 +17,7 @@ class AvlTree<K : Comparable<K>, V> : BaseBinaryTree<K, V>() {
         var balanceFactor = 0
         while (nodeToRotate.parent != null && balanceFactor.absoluteValue <= 1) {
             val parent = nodeToRotate.parent as AvlEntry
-            when (nodeToRotate) {
-                parent.left -> {
-                    parent.leftSubtreeHeight++
-                }
-                parent.right -> {
-                    parent.rightSubtreeHeight++
-                }
-            }
+            updateHeights(parent)
             balanceFactor = calcBalanceFactor(parent)
             nodeToRotate = parent
         }
@@ -49,7 +42,6 @@ class AvlTree<K : Comparable<K>, V> : BaseBinaryTree<K, V>() {
                 rotateRight(nodeToRotate)
             }
         }
-        // TODO Ivan Stankov: update balances of nodes above nodeToRotate
     }
 
     override fun remove(key: K): V? {
@@ -121,9 +113,14 @@ class AvlTree<K : Comparable<K>, V> : BaseBinaryTree<K, V>() {
     private fun updateHeights(node: AvlEntry<K, V>?) {
         if (node == null) return
 
-        val increment = if (node.left != null || node.right != null) 1 else 0
-        node.leftSubtreeHeight = maxOf((node.left as AvlEntry?)?.leftSubtreeHeight ?: 0, (node.left as AvlEntry?)?.rightSubtreeHeight ?: 0) + increment
-        node.rightSubtreeHeight = maxOf((node.right as AvlEntry?)?.leftSubtreeHeight ?: 0, (node.right as AvlEntry?)?.rightSubtreeHeight ?: 0) + increment
+        val leftIncrement = if (node.left != null) 1 else 0
+        val rightIncrement = if (node.right != null) 1 else 0
+
+        val leftNode = node.left as AvlEntry?
+        val rightNode = node.right as AvlEntry?
+
+        node.leftSubtreeHeight = maxOf(leftNode?.leftSubtreeHeight ?: 0, leftNode?.rightSubtreeHeight ?: 0) + leftIncrement
+        node.rightSubtreeHeight = maxOf(rightNode?.leftSubtreeHeight ?: 0, rightNode?.rightSubtreeHeight ?: 0) + rightIncrement
     }
 }
 

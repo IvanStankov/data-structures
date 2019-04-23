@@ -91,14 +91,16 @@ internal class AvlTreeVisualTest {
 
     @Test
     fun createWithLongLeftKink() {
-        val avl: Tree<String, Int> = AvlTree()
+        val avl: Tree<Int, Int> = AvlTree()
 
-        avl.insert("8", 6)
-        avl.insert("9", 9)
-        avl.insert("4", 4)
-        avl.insert("1", 1)
+        avl.insert(15, 15)
+        avl.insert(5, 5)
+        avl.insert(20, 20)
+        avl.insert(1, 1)
         treePrinter.print(avl)
-        avl.insert("5", 5)
+        avl.insert(8, 8)
+        treePrinter.print(avl)
+        avl.insert(10, 10)
         treePrinter.print(avl)
     }
 }
